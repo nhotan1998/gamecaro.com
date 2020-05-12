@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Caro</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+
+        .o_ban_co {
+
+            width: 40px;
+
+            height: 40px;
+
+            border: solid 1px blue;
+
+            text-align: center;
+
+            font-size: 20pt;
+
+            cursor: pointer;
+
+            color: #0a0a0a;
+
+            background: linear-gradient(to top, #03f4fc 0%,#f3f0f0 100%); 
+        }
+        #tiso{
+        	font-size: 2em;
+        	font-weight: bold;
+        	margin-left: 540px;
+        }
+       h1{
+       	text-align: center;
+       	color: #333;
+       	animation:shake 1s linear;
+       }
+       @keyframes shake{
+    	0% { transform: translateY(-1000px) ; }
+		}
+       .btn{
+        margin-left:550px; 
+       	font-weight: bold;
+       	font-size: 1.5em;
+       }
+       #ban-co{
+       	margin-left: 350px;
+       }
+       @media only screen and (max-width: 900px) {
+       	.btn{
+       		font-size: 16px;
+       		margin-left:80px;
+
+       	}
+       	 #ban-co{
+       	 	margin-left: 0px;
+       	 	
+       	 }
+       	 .o_ban_co{
+       	 	width: 14px;
+       	 	height:14px;
+       	 	font-size: 7pt;
+       	 	font-weight: bold;
+       	 }
+       	  #tiso{
+       	  	font-size: 1em;
+       	  	margin-left: 0px;
+       	  	font-weight: bold;
+       	  	text-align: center;
+       	  	color:#05f521;
+       	  }
+       	  h1{
+       	  	width:130px;
+       	  	height:130px;
+       	  	padding:20px;
+       	  	color:#0c0d0d;
+       	  	background:url(images/caro.png);
+       	  	background-repeat: no-repeat;
+       	  	background-size: cover;
+       	  	background-position: top;
+       	  	font-size: 1.5em;
+       	  	line-height: 130px;
+       	  	margin-left:70px;
+       	  }
+       }
+    </style>
+</head>
+<body>
+<h1>Cờ Caro</h1>
+
+<p id="Ban_Co"></p>
+
+<button class="btn" onclick="Play_Game()">Bắt đầu ván mới</button>
+
+<p id="playerWin"></p>
+
+<p id="tiso"></p>
+
+<script type="text/javascript"  src="script.js"></script>
+<script>
+ var matrix = [];
+
+    var turn = 0;
+
+    var isWinGame = false;
+
+	var n=15;
+
+	var tiso_X=0;
+
+	var tiso_O=0;
+
+    function Play_Game() { // Hàm bắt đầu game 
+
+        isWinGame = false;
+
+        matrix = Tao_ban_co(n);
+
+        showBan_co(matrix);
+
+    }
+
+    
+
+    function Tao_ban_co(n) { //Hàm tạo bàn cờ nxn
+
+        var matrix = [];
+
+        for (var i = 0; i < n; i++) {
+
+            matrix[i] = new Array(n);
+
+            for (var j = 0; j < n; j++) {
+
+                matrix[i][j] = " ";
+
+            }
+
+        }
+
+        return matrix;
+
+    }
+
+    function showBan_co(matrix) { //Hàm hiện thị bàn cờ
+
+        var s = "<table id=ban-co>";
+
+        for (var i = 0; i < matrix.length; i++) {
+
+            s += "<tr>";
+
+            for (var j = 0; j < matrix[i].length; j++) {
+
+                s += "<td class='o_ban_co' onclick='chon_o(" + i + "," + j + ")'>" + matrix[i][j] + "</td>";
+
+            }
+
+            s += "</tr>";
+
+        }
+
+        s += "</table>";
+
+        document.getElementById("Ban_Co").innerHTML = s;
+
+    }
+
+    function chon_o(hang, cot) { //Hàm chọn ô đánh là X hay O
+
+        if(!isWinGame){
+
+            turn++;
+
+            var value;
+
+            if (turn % 2 !== 0) { //Lượt chẵn thì X đánh
+
+                value = "X";
+
+            } else {			  //Lượt lẻ thì O đánh 	
+
+                value = "O";
+
+            }
+
+            if (matrix[hang][cot] != " ") { //Nếu tọa độ này có ng đánh thì player k đc đánh
+
+                matrix[hang][cot] = matrix[hang][cot];
+
+                turn--;
+
+            }
+
+            if (matrix[hang][cot] == " ") { //Nếu tọa độ này chưa đánh thì player đc phép đánh
+
+                matrix[hang][cot] = value;   
+
+            }
+
+            showBan_co(matrix);
+
+            checkWinner(hang, cot, value); //Gọi hàm checkWinner nếu chưa ai win tiếp tục đánh
+
+        }
+
+    }
+
+    function checkWinner(x, y, v) { //Hàm xem đã có player nào win chưa
+
+        if (winGame(x, y, v)) {  
+
+            isWinGame = true; //nếu wingame đúng thì dừng chơi xét v bằng X hay O để thông báo xem ai thắng và cập nhật tỉ số
+
+            if (v === "X") {
+
+				tiso_X++;
+
+				setTimeout(function(){alert('X thắng');},1); // Thông báo lên màn hình X thắng
+
+                //document.getElementById("playerWin").innerHTML = "Người chơi X thắng"; //Thông báo trực tiếp lên Web X thắng
+
+				//Play_Game(); //bắt đầu ván mới ngay khi X thắng
+
+            } else if (v === "O") {
+
+				tiso_O++;
+
+				setTimeout(function(){alert('O thắng');},1); // Thông báo lên màn hình O thắng
+
+                //document.getElementById("playerWin").innerHTML = "Người chơi O thắng"; // Thông báo trực tiếp lên Web O thắng
+
+				//Play_Game(); //bắt đầu ván mới ngay khi O thắng
+
+            }
+
+        }
+
+		document.getElementById("tiso").innerHTML = "Tỉ số X-O là "+tiso_X+"-"+tiso_O;//Hiện thị tỉ số
+
+    }
+
+	
+
+    function winGame(x, y, v) {
+
+        return CheckHang(x, y, v) || CheckCot(x, y, v) || check_cheo1(x, y, v) || check_cheo2(x,y,v);
+
+		
+
+    }
+
+    function CheckHang(x, y, v) { //Xem hàng trong matrix đã đủ đk win chưa
+
+        var dem = 0, arrTh = []
+
+        for (var k = -4; k <= 4; k++) {
+
+            if (y + k >= 0 && y + k < matrix.length) {
+
+                if (matrix[x][y + k] === v) {
+
+                    dem++;
+
+                    arrTh.push({ y: x, x: y + k })
+
+                } else if (dem < 5) {
+
+                    dem = 0;
+
+                }
+
+            }
+
+        }
+
+        if (dem === 5) {
+
+            fillColor(arrTh, v)
+
+            return true;
+
+        } else if (dem === 0) {
+
+            return false;
+
+        }
+
+    }
+
+    function CheckCot(x, y, v) { //Xem cột trong matrix đã đủ đk win chưa
+
+        var dem = 0, arrTh = []
+
+        for (var k = -4; k <= 4; k++) {
+
+            if (x + k >= 0 && x + k < matrix.length) {
+
+                if (matrix[x + k][y] === v) {
+
+                    dem++; 
+
+                    arrTh.push({ y: x + k, x: y })
+
+                } else if (dem < 5) {
+
+                    dem = 0;
+
+                }
+
+            }
+
+        }
+
+        if (dem === 5) {
+
+            fillColor(arrTh, v)
+
+            return true;
+
+        } else if (dem === 0) {
+
+            return false;
+
+        }
+
+    }
+
+    function check_cheo1(x, y, v) { //Xem chéo 1 trong matrix đã đủ đk win chưa
+
+        var dem = 0, arrTh = []
+
+        for (var k = 4, j = -4; k >= -4, j <= 4; k--, j++) {
+
+            if (x + k >= 0 && x + k < matrix.length && y + j >= 0 && y + j < matrix.length) {
+
+                if (matrix[x + k][y + j] === v) {
+
+                    dem++;
+
+                    arrTh.push({ y: x, x: y + k })
+
+                } else if (dem < 5) {
+
+                    dem = 0;
+
+                }
+
+            }
+
+        }
+
+        if (dem === 5) {
+
+            fillColor(arrTh, v)
+
+            return true;
+
+        } else if (dem === 0) {
+
+            return false;
+
+        }
+
+    }
+
+    function check_cheo2(x, y, v) { //Xem chéo 2 trong matrix đã đủ đk win chưa
+
+        var dem = 0, arrTh = []
+
+        for (var k = -4; k <= 4; k++) {
+
+            if (x + k >= 0 && x + k < matrix.length && y + k >= 0 && y + k < matrix.length) {
+
+                if (matrix[x + k][y + k] === v) {
+
+                    dem++;
+
+                    arrTh.push({ y: x + k, x: y + k })
+
+                } else if (dem < 5) {
+
+                    dem = 0;
+
+                }
+
+            }
+
+        }
+
+        if (dem === 5) {
+
+            fillColor(arrTh, v)
+
+            return true;
+
+        } else if (dem === 0) {
+
+            return false;
+
+        }
+
+    }
+
+    
+
+    function fillColor(arr, type) {
+
+        var banCo = document.getElementById("ban-co")
+
+        arr.forEach(function (e) {
+
+            banCo.querySelectorAll("tr")[e.y].querySelectorAll("td")[e.x].style.backgroundColor = "black"
+
+        })
+
+        //console.log(JSON.stringify(arr), type)
+
+    }
+
+	showBan_co(matrix);
+</script>
+
+</body>
+</html>
